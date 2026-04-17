@@ -1,17 +1,29 @@
 name: Test Action
 
+permissions:
+  contents: read # Needs it to run the action tests
+
 on:
   push:
 
 env:
   allow_showing_creds_in_test_repo: ${{ github.repository != 'tracebit-com/tracebit-community-action' }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   test-sync:
+    name: Test Sync
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
 
       - name: Configure credentials
         uses: tracebit-com/tracebit-community-action@d0a68cb29196eafce908de76ec596a7e9ca049da
@@ -61,10 +73,15 @@ jobs:
           cat ~/.ssh/prod_deploy.pub || echo "(no public key)"
 
   test-async:
+    name: Test Async
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
 
       - name: Configure credentials
         uses: tracebit-com/tracebit-community-action@d0a68cb29196eafce908de76ec596a7e9ca049da

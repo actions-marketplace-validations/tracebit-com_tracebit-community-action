@@ -6,12 +6,24 @@ on:
 env:
   allow_showing_creds_in_test_repo: ${{ github.repository != 'tracebit-com/tracebit-community-action' }}
 
+permissions:
+  contents: read # Needs to read the repo to simulate what actual usage is
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  issue-credentials:
+  configure-credentials-example:
+    name: Configure credentials example
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
 
       - name: Configure credentials
         continue-on-error: true
